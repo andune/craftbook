@@ -19,6 +19,8 @@
 
 package com.sk89q.craftbook.bukkit;
 
+import java.util.logging.Logger;
+
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.event.Event.Priority;
@@ -304,7 +306,12 @@ public class MechanicListenerAdapter {
             plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                 @Override
                 public void run() {
-                    manager.enumerate(event.getChunk());
+                	try {
+                		manager.enumerate(event.getChunk());
+                	} catch(Exception e) {
+                		Logger.getLogger("Minecraft").warning("[craftbook] Caught exception processing chunkLoad on chunk "+event.getChunk().getX()+","+event.getChunk().getZ());
+                		e.printStackTrace();
+                	}
                 }
             }, 2);
         }
