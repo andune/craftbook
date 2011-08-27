@@ -1,22 +1,18 @@
 package com.sk89q.craftbook.mech;
 
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
-import org.bukkit.material.Lever;
 
 import com.sk89q.craftbook.AbstractMechanic;
 import com.sk89q.craftbook.AbstractMechanicFactory;
 import com.sk89q.craftbook.InvalidMechanismException;
 import com.sk89q.craftbook.bukkit.MechanismsPlugin;
 import com.sk89q.worldedit.BlockWorldVector;
-import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.WorldVector;
-import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.bukkit.BukkitUtil;
 
 public class HiddenSwitch extends AbstractMechanic {
@@ -47,8 +43,13 @@ public class HiddenSwitch extends AbstractMechanic {
             Block b = world.getBlockAt((int)pos.getX(), (int)pos.getY(), (int)pos.getZ());
             if(b.getType() != Material.WALL_SIGN) // instead of SIGN_POST
                 return false;
-            Sign s = (Sign)b.getState();
-            return (s.getLine(1).equalsIgnoreCase("[x]"));
+            BlockState bs = b.getState();
+            // bug 656 workaround, which which NPE's happen as Bukkit returns a different value for
+            // b.getType() above as it does for BlockState.getType() below.
+            if( bs.getType() != Material.WALL_SIGN )
+            	return false;
+            Sign s = (Sign)bs;
+            return ("[x]".equalsIgnoreCase(s.getLine(1)));
         }
 
     }
