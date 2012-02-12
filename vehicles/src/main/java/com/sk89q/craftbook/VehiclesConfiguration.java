@@ -18,24 +18,24 @@
 
 package com.sk89q.craftbook;
 
-import java.io.*;
 
-import org.bukkit.*;
-import org.bukkit.util.config.*;
+import java.io.File;
 
+import org.bukkit.Material;
+import org.bukkit.configuration.file.FileConfiguration;
 /**
- * Configuration handler for CraftBook.
+ * FileConfiguration handler for CraftBook.
  * 
  * All fields are final because it is never appropriate to modify them during
- * operation, except for when the configuration is reloaded entirely, at which
- * point it is appropriate to construct an entirely new configuration instance
+ * operation, except for when the FileConfiguration is reloaded entirely, at which
+ * point it is appropriate to construct an entirely new FileConfiguration instance
  * and update the plugin accordingly.
  * 
  * @author sk89q
  * @author hash
  */
 public class VehiclesConfiguration {
-    public VehiclesConfiguration(Configuration cfg, File dataFolder) {
+    public VehiclesConfiguration(FileConfiguration cfg, File dataFolder) {
         this.dataFolder = dataFolder;
         
         matBoostMax =   Material.getMaterial(cfg.getInt("max-boost-block",      41));
@@ -51,7 +51,12 @@ public class VehiclesConfiguration {
         matDispenser =  Material.getMaterial(54);     // this can't be configurable because we need it to be a chest!
         
         minecartSlowWhenEmpty = cfg.getBoolean("minecart-slow-when-empty",      true);
+        minecartRemoveOnExit = cfg.getBoolean("minecart-remove-on-exit",        false);        
+        minecartRemoveEntities = cfg.getBoolean("minecart-remove-entities",     false);
         minecartMaxSpeedModifier = cfg.getDouble("minecart-max-speed-modifier", 1);
+        
+        boatRemoveEntities = cfg.getBoolean("boat-remove-entities",             false);
+        boatBreakReturn = cfg.getBoolean("boat-break-return-boat",              false);
     }
     
     public final File dataFolder;
@@ -69,6 +74,10 @@ public class VehiclesConfiguration {
     public final Material matDispenser;
     
     public final boolean minecartSlowWhenEmpty;
+    public final boolean minecartRemoveOnExit;
+    public final boolean minecartRemoveEntities;
     public final double minecartMaxSpeedModifier;
     
+    public final boolean boatRemoveEntities;
+    public final boolean boatBreakReturn;
 }

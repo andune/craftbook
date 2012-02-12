@@ -20,50 +20,53 @@ package com.sk89q.craftbook.gates.world;
 
 import org.bukkit.Server;
 import org.bukkit.block.Sign;
+import com.sk89q.craftbook.ic.AbstractIC;
 import com.sk89q.craftbook.ic.AbstractICFactory;
 import com.sk89q.craftbook.ic.ChipState;
 import com.sk89q.craftbook.ic.IC;
-import com.sk89q.craftbook.ic.SelfTriggeredIC;
+import com.sk89q.craftbook.ic.RestrictedIC;
 
-public class LavaSensorST extends LavaSensor implements SelfTriggeredIC {
+public class TimeControlAdvanced extends AbstractIC {
 
-    public LavaSensorST(Server server, Sign sign, boolean risingEdge) {
-        super(server, sign, risingEdge);
+    protected boolean risingEdge;
+
+    public TimeControlAdvanced(Server server, Sign sign) {
+        super(server, sign);
     }
 
     @Override
     public String getTitle() {
-        return "Self-triggered Lava Sensor";
+        return "Advanced Time Control";
     }
 
     @Override
     public String getSignTitle() {
-        return "ST LAVA SENSOR";
+        return "ADV TIME CONTROL";
     }
 
-    @Override
-    public void think(ChipState chip) {
-        chip.setOutput(0, hasLava());
-    }
+	@Override
+	public void trigger(ChipState chip) {
+		if (chip.isTriggered(0) && chip.getInput(0)) {
+			int time;
+			boolean t = chip.get(1);
+			if (t)
+				time = (8 - 8 + 24) * 1000;
+			else
+				time = (0 - 8 + 24) * 1000;
+			getSign().getWorld().setTime(time);
+		}
+	}
 
-    public static class Factory extends AbstractICFactory {
-    	
+    public static class Factory extends AbstractICFactory implements RestrictedIC {
+
+
         public Factory(Server server) {
             super(server);
         }
 
         @Override
         public IC create(Sign sign) {
-            return new LavaSensorST(getServer(), sign, true);
+            return new TimeControlAdvanced(getServer(), sign);
         }
     }
-
-	@Override
-	public boolean isActive() {
-		return true;
-	}
-
-	@Override
-	public void trigger(ChipState chip) {}
-
 }

@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sk89q.craftbook.gates.world;
+package com.sk89q.craftbook.gates.logic;
 
 import java.util.Random;
 import org.bukkit.Server;
@@ -26,33 +26,54 @@ import com.sk89q.craftbook.ic.AbstractICFactory;
 import com.sk89q.craftbook.ic.ChipState;
 import com.sk89q.craftbook.ic.IC;
 
-public class ResurrectDumbledore extends AbstractIC {
+public class ClockDivider extends AbstractIC {
     
     protected Random random = new Random();
     
     protected boolean risingEdge;
 
-    public ResurrectDumbledore(Server server, Sign sign, boolean risingEdge) {
+    public ClockDivider(Server server, Sign sign, boolean risingEdge) {
         super(server, sign);
         this.risingEdge = risingEdge;
     }
 
     @Override
     public String getTitle() {
-        return "Resurrection";
+        return "Clock Divider";
     }
 
     @Override
     public String getSignTitle() {
-        return "RESURRECT";
+        return "CLOCK DIVIDER";
     }
 
     @Override
     public void trigger(ChipState chip) {
-        if ((risingEdge && chip.getInput(0))
-                || (!risingEdge && !chip.getInput(0))) {
-            chip.setOutput(0, random.nextBoolean());
-        }
+    	int reset = 0;
+    	int count = 0;
+    	
+    	try {
+    		reset = Integer.parseInt(getSign().getLine(2));
+    	} catch (Exception e) {}
+    	try {
+    		count = Integer.parseInt(getSign().getLine(3));
+    	} catch (Exception e) {}
+    	if(reset < 2) reset=2;
+    	if(reset > 128) reset=128;
+    	
+    	// toggled, so increment count
+		count++;
+
+    	// check if counter is about to reset, if it isn't, save and return
+    	if(count < reset) {
+    		getSign().setLine(3, Integer.toString(count));
+    		return;
+    	}
+    	// if time to reset, toggle state
+    	chip.setOutput(0, !(chip.getOutput(0)));
+    	// reset count
+    	count = 0;
+    	getSign().setLine(3, Integer.toString(count));
     }
 
     public static class Factory extends AbstractICFactory {
@@ -66,7 +87,7 @@ public class ResurrectDumbledore extends AbstractIC {
 
         @Override
         public IC create(Sign sign) {
-            return new ResurrectDumbledore(getServer(), sign, risingEdge);
+            return new ClockDivider(getServer(), sign, risingEdge);
         }
     }
 

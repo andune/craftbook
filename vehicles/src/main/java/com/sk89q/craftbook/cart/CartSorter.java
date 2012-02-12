@@ -1,9 +1,22 @@
 package com.sk89q.craftbook.cart;
 
-import org.bukkit.*;
-import org.bukkit.block.*;
-import org.bukkit.entity.*;
-import com.sk89q.craftbook.util.*;
+import com.sk89q.craftbook.util.SignUtil;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.Sign;
+import org.bukkit.entity.Animals;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Minecart;
+import org.bukkit.entity.Monster;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.PoweredMinecart;
+import org.bukkit.entity.StorageMinecart;
+import org.bukkit.inventory.Inventory;
+
+/*
+ * @contributor LordEnki
+ */
 
 public class CartSorter extends CartMechanism {
     public void impact(Minecart cart, CartMechanismBlocks blocks, boolean minor) {
@@ -74,7 +87,7 @@ public class CartSorter extends CartMechanism {
             //XXX ohgod the sign's not facing any sensible direction at all, who do we tell?
             return;
         }
-        Block targetTrack = blocks.rail.getFace(next);
+        Block targetTrack = blocks.rail.getRelative(next);
         
         // now check sanity real quick that there's actually a track after this,
         // and then make the change.
@@ -152,6 +165,17 @@ public class CartSorter extends CartMechanism {
             } else if (parts[0].equalsIgnoreCase("Mob")) {
                 String testMob = parts[1];
                 test.toString().toLowerCase().equalsIgnoreCase(testMob);
+            } else if (minecart instanceof StorageMinecart && parts[0].equalsIgnoreCase("Ctns")) {
+                StorageMinecart storageCart = (StorageMinecart) minecart;
+                Inventory storageInventory = storageCart.getInventory();
+                
+                try {
+                    int item = Integer.parseInt(parts[1]);
+                    if (storageInventory.contains(item)) {
+                        return true;
+                    }
+                } catch (NumberFormatException e) {
+                }
             }
         }
 

@@ -21,10 +21,12 @@ package com.sk89q.craftbook.bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Server;
 import org.bukkit.World;
-import com.sk89q.bukkit.migration.*;
+// import com.sk89q.bukkit.migration.*;
+import com.sk89q.wepif.PermissionsResolverManager;
 import com.sk89q.craftbook.*;
 import com.sk89q.craftbook.circuits.*;
 import com.sk89q.craftbook.gates.logic.*;
+import com.sk89q.craftbook.gates.weather.*;
 import com.sk89q.craftbook.gates.world.*;
 import com.sk89q.craftbook.ic.ICFamily;
 import com.sk89q.craftbook.ic.ICManager;
@@ -46,21 +48,14 @@ public class CircuitsPlugin extends BaseBukkitPlugin {
     @Override
     public void onEnable() {
         super.onEnable();
-        Server server = getServer();
         
         createDefaultConfiguration("config.yml");
         createDefaultConfiguration("custom-ics.txt");
-        config = new CircuitsConfiguration(getConfiguration(), getDataFolder());
+        config = new CircuitsConfiguration(getConfig(), getDataFolder());
         
-        // Prepare to answer permissions questions.
-        perms = new PermissionsResolverManager(
-                getConfiguration(),     //FIXME this uh, isn't right.
-                server,
-                getDescription().getName(),
-                logger
-        );
-        new PermissionsResolverServerListener(perms).register(this);
-        
+        PermissionsResolverManager.initialize(this);
+        perms = PermissionsResolverManager.getInstance();
+                
         manager = new MechanicManager(this);
         MechanicListenerAdapter adapter = new MechanicListenerAdapter(this);
         adapter.register(manager);
@@ -73,6 +68,9 @@ public class CircuitsPlugin extends BaseBukkitPlugin {
         }
         if (config.enablePumpkins) {
             manager.register(new JackOLantern.Factory());
+        }
+        if (config.enableGlowStone) {
+            manager.register(new GlowStone.Factory());
         }
         if (config.enableICs) {
             manager.register(new ICMechanicFactory(this, icManager));
@@ -94,7 +92,6 @@ public class CircuitsPlugin extends BaseBukkitPlugin {
         //ICFamily family3I3O = new Family3I3O();
         
         //SISOs
-        icManager.register("MC9999", new ResurrectDumbledore.Factory(server, true), familySISO);
         icManager.register("MC1000", new Repeater.Factory(server), familySISO);
         icManager.register("MC1001", new Inverter.Factory(server), familySISO);
         icManager.register("MC1017", new ToggleFlipFlop.Factory(server, true), familySISO);
@@ -103,26 +100,26 @@ public class CircuitsPlugin extends BaseBukkitPlugin {
         icManager.register("MC1025", new ServerTimeModulus.Factory(server, true), familySISO);
         icManager.register("MC1110", new WirelessTransmitter.Factory(server), familySISO);
         icManager.register("MC1111", new WirelessReceiver.Factory(server, true), familySISO);
-        icManager.register("MC1200", new CreatureSpawner.Factory(server, true), familySISO);    // REQ PERM
-        icManager.register("MC1201", new ItemDispenser.Factory(server, true), familySISO);  
-        icManager.register("MC1207", new FlexibleSetBlock.Factory(server), familySISO);  // REQ PERM
-        icManager.register("MC1208", new MultipleSetBlock.Factory(server), familySISO);  // REQ PERM
-        //Missing: 1202 (replaced by dispenser?)                                                // REQ PERM
-        icManager.register("MC1203", new LightningSummon.Factory(server, true), familySISO);  // REQ PERM
-        //Missing: 1205                                                                         // REQ PERM
-        //Missing: 1206                                                                         // REQ PERM
+        icManager.register("MC1200", new CreatureSpawner.Factory(server, true), familySISO);     // Restricted
+        icManager.register("MC1201", new ItemDispenser.Factory(server, true), familySISO);  	 // Restricted
+        //Missing: 1202 (replaced by dispenser?)                                                 // Restricted
+        icManager.register("MC1203", new LightningSummon.Factory(server, true), familySISO);     // Restricted
+        icManager.register("MC1205", new SetBlockAbove.Factory(server), familySISO);             // Restricted
+        icManager.register("MC1206", new SetBlockBelow.Factory(server), familySISO);             // Restricted
+        icManager.register("MC1207", new FlexibleSetBlock.Factory(server), familySISO);          // Restricted
+        icManager.register("MC1208", new MultipleSetBlock.Factory(server), familySISO);          // Restricted
         icManager.register("MC1230", new DaySensor.Factory(server, true), familySISO);
-        icManager.register("MC1231", new TimeControl.Factory(server, true), familySISO);        // REQ PERM
+        icManager.register("MC1231", new TimeControl.Factory(server, true), familySISO);         // Restricted
+        icManager.register("MC1240", new ArrowShooter.Factory(server, true), familySISO);        // Restricted
+        icManager.register("MC1241", new ArrowBarrage.Factory(server, true), familySISO);        // Restricted
         icManager.register("MC1260", new WaterSensor.Factory(server, true), familySISO);
         icManager.register("MC1261", new LavaSensor.Factory(server, true), familySISO);
         icManager.register("MC1262", new LightSensor.Factory(server, true), familySISO);
-        //Missing: 1240 (replaced by dispenser?)                                                // REQ PERM
-        //Missing: 1241 (replaced by dispenser?)                                                // REQ PERM
-        //Missing: 1420
+        icManager.register("MC1420", new ClockDivider.Factory(server, true), familySISO);
         icManager.register("MC1510", new MessageSender.Factory(server, true), familySISO);
         
         //SI3Os
-        //Missing: 2020 (?)
+        icManager.register("MC2020", new Random3Bit.Factory(server, true), familySI3O);
         icManager.register("MC2999", new Marquee.Factory(server), familySI3O);
         
         //3ISOs
@@ -138,8 +135,9 @@ public class CircuitsPlugin extends BaseBukkitPlugin {
         icManager.register("MC3036", new LevelTriggeredDFlipFlop.Factory(server), family3ISO);
         icManager.register("MC3040", new Multiplexer.Factory(server), family3ISO);
         icManager.register("MC3101", new DownCounter.Factory(server), family3ISO);
-        //Missing: 3231                                                                         // REQ PERM
-        
+        icManager.register("MC3231", new TimeControlAdvanced.Factory(server), family3ISO);		// Restricted
+
+        //Missing: 3231                                                                         // Restricted        
         //3I3Os
         //Missing: 4000
         //Missing: 4010
@@ -152,13 +150,23 @@ public class CircuitsPlugin extends BaseBukkitPlugin {
         icManager.register("MC0230", new DaySensorST.Factory(server), familySISO);
         icManager.register("MC0260", new WaterSensorST.Factory(server), familySISO);
         icManager.register("MC0261", new LavaSensorST.Factory(server), familySISO);
+        icManager.register("MC0262", new LightSensorST.Factory(server), familySISO);
         icManager.register("MC0420", new Clock.Factory(server), familySISO);
         icManager.register("MC0421", new Monostable.Factory(server), familySISO);
-        //Missing: 0020
-	//Missing: 0230
+        //Missing: 0020 self-triggered RNG (may cause server load issues)
 	//Missing: 0262
 	//Missing: 0420     
-        
+        //Xtra ICs
+        //SISOs
+        icManager.register("MCX230", new RainSensor.Factory(server, true), familySISO);
+        icManager.register("MCX231", new TStormSensor.Factory(server, true), familySISO);
+        icManager.register("MCX233", new WeatherControl.Factory(server, true), familySISO);
+        //3ISOs
+        icManager.register("MCT233", new WeatherControlAdvanced.Factory(server, true), family3ISO);
+        //Self triggered
+        icManager.register("MCZ230", new RainSensorST.Factory(server, true), familySISO);
+        icManager.register("MCZ231", new TStormSensorST.Factory(server, true), familySISO);
+
     }
     
     /**

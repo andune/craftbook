@@ -19,11 +19,13 @@
 package com.sk89q.craftbook.gates.world;
 
 import org.bukkit.Server;
+import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import com.sk89q.craftbook.ic.AbstractIC;
 import com.sk89q.craftbook.ic.AbstractICFactory;
 import com.sk89q.craftbook.ic.ChipState;
 import com.sk89q.craftbook.ic.IC;
+import com.sk89q.craftbook.util.SignUtil;
 
 public class LightSensor extends AbstractIC {
 
@@ -47,31 +49,48 @@ public class LightSensor extends AbstractIC {
     @Override
     public void trigger(ChipState chip) {
         if (risingEdge && chip.getInput(0) || (!risingEdge && !chip.getInput(0))) {
-            chip.setOutput(0, hasLight());
+            chip.setOutput(0, getTargetLighted());
         }
     }
 
+    protected boolean getTargetLighted() {
+    	int x=0;
+    	int y=1;
+    	int z=0;
+    	int min=10;
+    	try {
+    		String[] st = getSign().getLine(3).split(":");
+    		if(st.length != 3) throw new Exception();
+    		x = Integer.parseInt(st[0]);
+    		y = Integer.parseInt(st[1]);
+    		z = Integer.parseInt(st[2]);
+    	} catch (Exception e) {}
+
+    	try {
+    		min = Integer.parseInt(getSign().getLine(2));
+    	} catch (Exception e) {
+    		getSign().setLine(2, Integer.toString(min));
+    		getSign().update();
+    	}
+    	
+    	return hasLight(min, x, y, z);
+    }
+
+    
     /**
      * Returns true if the sign has a light level above the specified.
      * 
      * @return
      */
-    private boolean hasLight() {
+    private boolean hasLight(int specifiedLevel, int x, int y, int z) {
+    	Block signBlock = getSign().getBlock();
+    	Block backBlock = signBlock.getRelative(SignUtil.getBack(signBlock));
         int lightLevel = (int) getSign()
                 .getWorld()
-                .getBlockAt(getSign().getBlock().getLocation().getBlockX(),
-                        getSign().getBlock().getLocation().getBlockY() + 1,
-                        getSign().getBlock().getLocation().getBlockZ())
+                .getBlockAt(backBlock.getX() + x,
+                        backBlock.getY() + y,
+                        backBlock.getZ() + z)
                 .getLightLevel();
-        int specifiedLevel = 0;
-        try {
-            String specified = getSign().getLine(2);
-            if (specified.length() > 0) {
-                specifiedLevel = Integer.parseInt(specified);
-            }
-        } catch (NumberFormatException e) {
-            // eat the exception.
-        }
 
         return lightLevel >= specifiedLevel;
     }

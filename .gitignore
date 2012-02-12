@@ -1,7 +1,6 @@
-circuits/target
-common/target
-distribution/target
-mechanisms/target
-vehicles/target
-/.classpath
-/.project
+.project
+.settings
+*/*.classpath
+*/*.project
+*/*.settings
+*/*target

@@ -18,52 +18,53 @@
 
 package com.sk89q.craftbook.gates.world;
 
+
 import org.bukkit.Server;
 import org.bukkit.block.Sign;
+
 import com.sk89q.craftbook.ic.AbstractICFactory;
 import com.sk89q.craftbook.ic.ChipState;
 import com.sk89q.craftbook.ic.IC;
-import com.sk89q.craftbook.ic.SelfTriggeredIC;
+import com.sk89q.craftbook.ic.RestrictedIC;
 
-public class LavaSensorST extends LavaSensor implements SelfTriggeredIC {
+public class ArrowBarrage extends ArrowShooter {
 
-    public LavaSensorST(Server server, Sign sign, boolean risingEdge) {
+    protected boolean risingEdge;
+
+    public ArrowBarrage(Server server, Sign sign, boolean risingEdge) {
         super(server, sign, risingEdge);
     }
 
     @Override
     public String getTitle() {
-        return "Self-triggered Lava Sensor";
+        return "Arrow Barrage";
     }
 
     @Override
     public String getSignTitle() {
-        return "ST LAVA SENSOR";
+        return "ARROW BARRAGE";
     }
 
     @Override
-    public void think(ChipState chip) {
-        chip.setOutput(0, hasLava());
+    public void trigger(ChipState chip) {
+        if (risingEdge && chip.getInput(0) || (!risingEdge && !chip.getInput(0))) {
+        	shootArrows(5);
+        }
     }
 
-    public static class Factory extends AbstractICFactory {
-    	
-        public Factory(Server server) {
+    public static class Factory extends AbstractICFactory implements
+            RestrictedIC {
+
+        protected boolean risingEdge;
+
+        public Factory(Server server, boolean risingEdge) {
             super(server);
+            this.risingEdge = risingEdge;
         }
 
         @Override
         public IC create(Sign sign) {
-            return new LavaSensorST(getServer(), sign, true);
+            return new ArrowBarrage(getServer(), sign, risingEdge);
         }
     }
-
-	@Override
-	public boolean isActive() {
-		return true;
-	}
-
-	@Override
-	public void trigger(ChipState chip) {}
-
 }

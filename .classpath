@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="circuits/src/main/java"/>
+	<classpathentry kind="src" path="common/src/main/java"/>
+	<classpathentry kind="src" path="mechanisms/src/main/java"/>
+	<classpathentry kind="src" path="vehicles/src/main/java"/>
+	<classpathentry kind="lib" path="circuits/target/circuits-3.0-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="common/target/common-3.0-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="distribution/target/distribution-3.0-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="mechanisms/target/mechanisms-3.0-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="vehicles/target/vehicles-3.0-SNAPSHOT.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="var" path="M2_REPO/org/bukkit/craftbukkit/0.0.1-SNAPSHOT/craftbukkit-0.0.1-SNAPSHOT.jar" sourcepath="/BUKKIT_SOURCE"/>
+	<classpathentry kind="var" path="M2_REPO/com/sk89q/worldedit/4.7-SNAPSHOT/worldedit-4.7-SNAPSHOT.jar"/>
+	<classpathentry kind="output" path="vehicles/target/classes"/>
+</classpath>

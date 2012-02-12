@@ -18,6 +18,7 @@
 
 package com.sk89q.craftbook.gates.world;
 
+import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
@@ -27,70 +28,54 @@ import com.sk89q.craftbook.ic.ChipState;
 import com.sk89q.craftbook.ic.IC;
 import com.sk89q.craftbook.ic.RestrictedIC;
 import com.sk89q.craftbook.util.SignUtil;
+import com.sk89q.worldedit.blocks.BlockType;
 
-public class MultipleSetBlock extends AbstractIC {
 
-    public MultipleSetBlock(Server server, Sign sign) {
+public class SetBlockAbove extends AbstractIC {
+
+    public SetBlockAbove(Server server, Sign sign) {
         super(server, sign);
     }
 
     @Override
     public String getTitle() {
-        return "Multiple SetBlock";
+        return "Set Block Above";
     }
 
     @Override
     public String getSignTitle() {
-        return "MULTI-SET BLOCK";
+        return "SET BLOCK ABOVE";
     }
 
+    //TODO: add block metadata support
     @Override
     public void trigger(ChipState chip) {
-        String line3 = getSign().getLine(2).toUpperCase();
-        String line4 = getSign().getLine(3);
+
+        String sblock = getSign().getLine(2).toUpperCase().trim();
+        String force = getSign().getLine(3).toUpperCase().trim();
 
         chip.setOutput(0, chip.getInput(0));
 
-        boolean inp = chip.getInput(0);
+        int block = -1;
+        BlockType bt = BlockType.lookup(sblock, true);
+        if(bt != null) block = bt.getID();
 
-        String[] dim = line4.split(":");
-
+        //FIXME hack for broken WorldEdit <=5.1
+        if(block == -1)
+        	try {
+        		block = Integer.parseInt(sblock);
+        	} catch (Exception e) {
+        		return;
+        	}
+        
         Block body = SignUtil.getBackBlock(getSign().getBlock());
+
         int x = body.getX();
         int y = body.getY();
         int z = body.getZ();
-
-        String[] coords;
-        coords = line3.replaceAll("\\+","").split(":");
         
-        if ( coords.length != 4 )
-            return;
-
-        int block = -1;
-        try {
-            block = Integer.parseInt(coords[3]);
-        } catch (Exception e) {
-            return;
-        }
-
-        x += Integer.parseInt(coords[0]);
-        y += Integer.parseInt(coords[1]);
-        z += Integer.parseInt(coords[2]);
-
-        if (!inp) {
-            block = 0;
-        }
-
-        if ( dim.length == 3 ) {
-            for( int lx = 0; lx < (Integer.parseInt(dim[0])); lx++ ) {
-                for( int ly = 0; ly < (Integer.parseInt(dim[1])); ly++ ) {
-                    for( int lz = 0; lz < (Integer.parseInt(dim[2])); lz++ ) {
-                        body.getWorld().getBlockAt(x + lx, y + ly, z + lz).setTypeId(block);
-                    }
-                }
-            }
-        } else {
-            body.getWorld().getBlockAt(x, y, z).setTypeId(block);
+        if(force.equals("FORCE") || body.getWorld().getBlockAt(x, y+1, z).getType() == Material.AIR) {
+        	body.getWorld().getBlockAt(x, y+1, z).setTypeId(block);
         }
     }
 
@@ -103,7 +88,7 @@ public class MultipleSetBlock extends AbstractIC {
 
         @Override
         public IC create(Sign sign) {
-            return new MultipleSetBlock(getServer(), sign);
+            return new SetBlockAbove(getServer(), sign);
         }
     }
 

@@ -25,45 +25,54 @@ import com.sk89q.craftbook.ic.ChipState;
 import com.sk89q.craftbook.ic.IC;
 import com.sk89q.craftbook.ic.SelfTriggeredIC;
 
-public class LavaSensorST extends LavaSensor implements SelfTriggeredIC {
+public class LightSensorST extends LightSensor implements SelfTriggeredIC {
 
-    public LavaSensorST(Server server, Sign sign, boolean risingEdge) {
+    protected boolean risingEdge;
+
+    public LightSensorST(Server server, Sign sign, boolean risingEdge) {
         super(server, sign, risingEdge);
     }
 
     @Override
     public String getTitle() {
-        return "Self-triggered Lava Sensor";
+        return "Self-Triggered Light Sensor";
     }
 
     @Override
     public String getSignTitle() {
-        return "ST LAVA SENSOR";
+        return "ST LIGHT SENSOR";
+    }
+    
+    @Override
+    public void trigger(ChipState chip)
+    {}
+	
+    @Override
+    public boolean isActive() {
+    	return true;
     }
 
     @Override
     public void think(ChipState chip) {
-        chip.setOutput(0, hasLava());
+    	chip.setOutput(0, getTargetLighted());
     }
-
+    
+    /**
+     * Finds the location where the light detect should be done, and returns the state.
+     * 
+     * @return
+     */
+    
     public static class Factory extends AbstractICFactory {
-    	
+
         public Factory(Server server) {
             super(server);
         }
 
         @Override
         public IC create(Sign sign) {
-            return new LavaSensorST(getServer(), sign, true);
+            return new LightSensorST(getServer(), sign, true);
         }
     }
-
-	@Override
-	public boolean isActive() {
-		return true;
-	}
-
-	@Override
-	public void trigger(ChipState chip) {}
 
 }
