@@ -1,8 +1,8 @@
 package com.sk89q.craftbook;
 
-import org.bukkit.*;
-import org.bukkit.block.*;
-
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 
 /**
  * Decorates bukkit's directional block power queries with a three-valued logic
@@ -47,7 +47,7 @@ public abstract class RedstoneUtil {
      * @return true if the pow block is a power conductor (in CraftBook, at this time we only consider this to be wires).
      */
     public static boolean isPotentialPowerSource(Block pow) {
-        return (pow.getType() == Material.REDSTONE_WIRE);
+        return (pow.getType() == Material.REDSTONE_WIRE || pow.getType() == Material.DIODE);
         //return BlockType.isRedstoneBlock(pow.getTypeId());
     }
     
@@ -57,8 +57,11 @@ public abstract class RedstoneUtil {
      * @return true if a mechanism in the mech block is able to receive power from the pow block (i.e. if it's a power conductor and if it has a sense of directionality it is also pointing at mech).
      */
     public static boolean isPotentialPowerSource(Block mech, Block pow) {
-        //FIXME this method doesn't actually take direction into account which is its stated purpose
-        return (pow.getType() == Material.REDSTONE_WIRE);
+        if (pow.getType() == Material.REDSTONE_WIRE || pow.getType() == Material.DIODE) {
+            return true;
+            //return mech.isBlockFacePowered(mech.getFace(pow));
+        }
+        return false;
     }
     
     

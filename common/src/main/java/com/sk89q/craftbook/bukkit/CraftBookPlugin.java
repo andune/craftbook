@@ -24,7 +24,7 @@ package com.sk89q.craftbook.bukkit;
  * @author sk89q
  */
 public class CraftBookPlugin extends BaseBukkitPlugin {
-    
+        
     @Override
     protected void registerEvents() {
     }

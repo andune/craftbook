@@ -8,17 +8,17 @@
   <parent>
     <groupId>com.sk89q.craftbook</groupId>
     <artifactId>craftbook</artifactId>
-    <version>3.0-SNAPSHOT</version>
+    <version>3.1-SNAPSHOT</version>
   </parent>
   <artifactId>circuits</artifactId>
-  <version>3.0-SNAPSHOT</version>
+  <version>3.1-SNAPSHOT</version>
   <name>CraftBook Circuits</name>
 
   <dependencies>
     <dependency>
       <groupId>com.sk89q.craftbook</groupId>
       <artifactId>common</artifactId>
-      <version>3.0-SNAPSHOT</version>
+      <version>3.1-SNAPSHOT</version>
     </dependency>
   </dependencies>
 
@@ -74,9 +74,6 @@
               <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
               <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
             </manifest>
-            <manifestEntries>
-              <Class-Path>CraftBook.jar WorldEdit.jar ../WorldEdit.jar lib/WorldEdit.jar</Class-Path>
-            </manifestEntries>
           </archive>
         </configuration>
       </plugin>

@@ -25,9 +25,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
+
 import org.bukkit.event.block.BlockEvent;
-import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.bukkit.*;
+
+import com.sk89q.worldedit.BlockWorldVector;
+import com.sk89q.worldedit.BlockWorldVector2D;
+import com.sk89q.worldedit.bukkit.BukkitUtil;
 
 /**
  * Holds the blocks that are watched by mechanics.
@@ -110,10 +113,10 @@ class WatchBlockManager {
     }
 
     /**
-     * Get a list of mechanics that in a specified chunk.
+     * Get the set of mechanics in a specified chunk.
      * 
      * @param chunk
-     * @return
+     * @return the set of mechanics in a specified chunk.
      */
     public Set<PersistentMechanic> getByChunk(BlockWorldVector2D chunk) {
         Set<PersistentMechanic> folks = new HashSet<PersistentMechanic>();

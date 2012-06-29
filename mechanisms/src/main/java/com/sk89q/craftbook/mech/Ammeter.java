@@ -30,6 +30,7 @@ import com.sk89q.worldedit.bukkit.BukkitUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 /**
@@ -85,7 +86,10 @@ public class Ammeter extends AbstractMechanic {
             current = 0;
         } else if (type == Material.REDSTONE_WIRE) {
             current = data;
+        } else if (type == Material.DIODE_BLOCK_ON) {
+            current = 15;
         }
+        
         return current;
     }
 
@@ -136,4 +140,10 @@ public class Ammeter extends AbstractMechanic {
             return null;
         }
     }
+
+
+	@Override
+	public void onBlockBreak(BlockBreakEvent event) {
+		
+	}
 }

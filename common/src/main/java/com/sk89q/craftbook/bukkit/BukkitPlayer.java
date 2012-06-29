@@ -20,6 +20,7 @@ package com.sk89q.craftbook.bukkit;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+
 import com.sk89q.craftbook.LocalPlayer;
 
 public class BukkitPlayer implements LocalPlayer {
@@ -50,6 +51,11 @@ public class BukkitPlayer implements LocalPlayer {
     @Override
     public boolean hasPermission(String perm) {
         return plugin.hasPermission(player, perm);
+    }
+
+    @Override
+    public String getName() {
+	return player.getName();
     }
 
 }

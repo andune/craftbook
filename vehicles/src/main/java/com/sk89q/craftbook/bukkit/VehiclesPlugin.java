@@ -53,7 +53,6 @@ public class VehiclesPlugin extends BaseBukkitPlugin {
     private Listener lblock;
     private MinecartManager cartman;
     
-    
     @Override
     public void onEnable() {
         super.onEnable();
@@ -95,12 +94,21 @@ public class VehiclesPlugin extends BaseBukkitPlugin {
             VehiclesConfiguration config = getLocalConfiguration();
             Vehicle vehicle = event.getVehicle();
             Entity entity = event.getEntity();
+            
             if (entity instanceof Player) return;
             if (!config.boatRemoveEntities && !config.minecartRemoveEntities) return;
+            
             if (config.boatRemoveEntities ==  true && (vehicle instanceof Boat)) {
-                event.getEntity().remove();
+                if (config.boatRemoveEntitiesOtherBoats != true && 
+                        (entity instanceof Boat)) return;
+                
+                entity.remove();
             }
+            
             if (config.minecartRemoveEntities ==  true && (vehicle instanceof Minecart)) {
+                if (config.minecartRemoveEntitiesOtherCarts != true && 
+                        (entity instanceof Minecart)) return;
+                
                 entity.remove();
             }
         }
@@ -144,6 +152,9 @@ public class VehiclesPlugin extends BaseBukkitPlugin {
         public void onVehicleMove(VehicleMoveEvent event) {
             // Ignore events not relating to minecarts.
             if (!(event.getVehicle() instanceof Minecart)) return;
+            
+            if(config.minecartDecayWhenEmpty && Math.random() > 0.8D && event.getVehicle().isEmpty()) 
+        	((Minecart)event.getVehicle()).setDamage(((Minecart)event.getVehicle()).getDamage()+3);
             
             cartman.impact(event);
         }

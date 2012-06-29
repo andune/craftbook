@@ -31,6 +31,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -286,8 +287,6 @@ public class Cauldron extends AbstractMechanic {
                         world.dropItem(player.getLocation(), i.getValue());
                     }
                 }
-                //FIXME: deprecated call
-                player.updateInventory();
                 // Didn't find a recipe
             } else {
                 player.sendMessage(ChatColor.RED
@@ -394,4 +393,9 @@ public class Cauldron extends AbstractMechanic {
     public boolean isActive() {
         return false;
     }
+
+	@Override
+	public void onBlockBreak(BlockBreakEvent event) {
+		
+	}
 }

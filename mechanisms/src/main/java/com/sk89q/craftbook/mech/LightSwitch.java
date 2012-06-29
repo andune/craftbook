@@ -34,6 +34,7 @@ import com.sk89q.worldedit.bukkit.BukkitUtil;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 /**
@@ -130,7 +131,8 @@ public class LightSwitch extends AbstractMechanic {
      * Toggle lights in the immediate area.
      * 
      * @param pt
-     * @return
+     * @return true if the block was recogized as a lightswitch; this may or may
+     *         not mean that any lights were actually toggled.
      */
     private boolean toggleLights(BlockWorldVector pt) {
         World world = BukkitUtil.toWorld(pt);
@@ -188,4 +190,11 @@ public class LightSwitch extends AbstractMechanic {
     public boolean isActive() {
         return false; /* Keeps no state */
     }
+
+
+
+	@Override
+	public void onBlockBreak(BlockBreakEvent event) {
+		
+	}
 }

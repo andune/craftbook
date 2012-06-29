@@ -7,7 +7,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.sk89q.craftbook</groupId>
   <artifactId>craftbook</artifactId>
-  <version>3.0-SNAPSHOT</version>
+  <version>3.1-SNAPSHOT</version>
   <name>CraftBook</name>
   <description>CraftBook adds fun mechanics and redstone-powered contraptions to Minecraft</description>
   <packaging>pom</packaging>
@@ -17,15 +17,25 @@
     <url>https://github.com/sk89q/craftbook</url>
     <developerConnection>scm:git:git@github.com:sk89q/craftbook.git</developerConnection>
   </scm>
-
+  <properties>
+          <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+  
   <repositories>
+    <!-- Repository for zml's stuff -->
+    <repository>
+      <id>zml-repo</id>
+      <url>http://files.zachsthings.com/repo</url>
+    </repository>
+    <!-- Repository for other dependencies of SK's -->
     <repository>
       <id>sk89q-mvn2</id>
       <url>http://mvn2.sk89q.com/repo</url>
     </repository>
+    <!-- Repository for Bukkit -->
     <repository>
       <id>bukkit-repo</id>
-      <url>http://repo.bukkit.org/content/groups/public/</url>
+      <url>http://repo.bukkit.org/content/groups/public</url>
     </repository>
   </repositories>
 
@@ -33,12 +43,17 @@
     <dependency>
       <groupId>com.sk89q</groupId>
       <artifactId>worldedit</artifactId>
-      <version>5.1</version>
+      <version>5.4-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>bukkit</artifactId>
-      <version>1.1-R3</version>
+      <version>1.2.5-R4.0</version>
+    </dependency>
+    <dependency>
+    	<groupId>org.bukkit</groupId>
+    	<artifactId>craftbukkit</artifactId>
+    	<version>1.2.5-R4.0</version>
     </dependency>
   </dependencies>
   

@@ -23,12 +23,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.logging.Logger;
+
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
-import com.sk89q.wepif.PermissionsResolverManager;
+
 import com.sk89q.craftbook.LocalPlayer;
+
+import com.sk89q.wepif.PermissionsResolverManager;
 
 /**
  * Base plugin class for CraftBook for child CraftBook plugins.
@@ -89,11 +92,8 @@ public abstract class BaseBukkitPlugin extends JavaPlugin {
     /**
      * Register an event.
      * 
-     * @param type
      * @param listener
-     * @param priority
      */
-    
     protected void registerEvents(Listener listener) {
     	getServer().getPluginManager().registerEvents(listener, this);
     }
@@ -126,7 +126,6 @@ public abstract class BaseBukkitPlugin extends JavaPlugin {
                     e.printStackTrace();
                 } finally {
                     try {
-                        if (input != null)
                             input.close();
                     } catch (IOException e) {}
 
@@ -142,8 +141,9 @@ public abstract class BaseBukkitPlugin extends JavaPlugin {
     /**
      * Get a player.
      * 
-     * @param player Bukkit Player object
-     * @return
+     * @param player
+     *            Bukkit Player object
+     * @return a (new!) object wrapping Bukkit's player type with our own.
      */
     public LocalPlayer wrap(Player player) {
         return new BukkitPlayer(this, player);
@@ -154,7 +154,7 @@ public abstract class BaseBukkitPlugin extends JavaPlugin {
      * 
      * @param sender
      * @param perm
-     * @return 
+     * @return true if the sender has the requested permission, false otherwise
      */
     public boolean hasPermission(CommandSender sender, String perm) {
         if (sender.isOp()) {

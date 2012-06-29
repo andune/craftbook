@@ -19,20 +19,21 @@
 
 package com.sk89q.craftbook.mech;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.util.Random;
-
-import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerInteractEvent;
-
 import com.sk89q.craftbook.AbstractMechanic;
 import com.sk89q.craftbook.AbstractMechanicFactory;
 import com.sk89q.craftbook.LocalPlayer;
 import com.sk89q.craftbook.bukkit.MechanismsPlugin;
+
 import com.sk89q.worldedit.BlockWorldVector;
 import com.sk89q.worldedit.blocks.BlockID;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.util.Random;
+import org.bukkit.entity.Player;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 
 /**
  * This mechanism allow players to read bookshelves and get a random line
@@ -91,8 +92,9 @@ public class Bookcase extends AbstractMechanic {
     /**
      * Get a line from the book lines file.
      * 
-     * @return
+     * @return a line from the book lines file.
      * @throws IOException
+     *             if we have trouble with the "books.txt" configuration file.
      */
     protected String getBookLine() throws IOException {
         RandomAccessFile file = new RandomAccessFile(
@@ -145,7 +147,8 @@ public class Bookcase extends AbstractMechanic {
         if (!plugin.getLocalConfiguration().bookcaseSettings.enable) return;
         
         Player player = event.getPlayer();
-        read(plugin.wrap(player), plugin.getLocalConfiguration().bookcaseSettings.readLine);
+        if(!player.getItemInHand().getType().isBlock())
+            read(plugin.wrap(player), plugin.getLocalConfiguration().bookcaseSettings.readLine);
     }
 
     /**
@@ -181,4 +184,9 @@ public class Bookcase extends AbstractMechanic {
         }
 
     }
+
+	@Override
+	public void onBlockBreak(BlockBreakEvent event) {
+		
+	}
 }

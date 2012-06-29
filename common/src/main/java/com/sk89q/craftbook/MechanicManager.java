@@ -19,21 +19,28 @@
 
 package com.sk89q.craftbook;
 
-import java.util.*;
+import java.util.Set;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.bukkit.event.Event;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.Chunk;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
-import org.bukkit.event.*;
-import org.bukkit.event.block.*;
-import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
+
 import com.sk89q.craftbook.bukkit.BaseBukkitPlugin;
 import com.sk89q.craftbook.bukkit.ChangedSign;
-import com.sk89q.worldedit.*;
+
+import com.sk89q.worldedit.BlockWorldVector2D;
+import com.sk89q.worldedit.BlockWorldVector;
 import static com.sk89q.worldedit.bukkit.BukkitUtil.*;
 
 /**
@@ -150,6 +157,38 @@ public class MechanicManager {
         
         return false;
     }
+    
+    /**
+     * Handle a block break event.
+     * 
+     * @param event
+     * @return true if there was a mechanic to process the event
+     */
+    public boolean dispatchBlockBreak(BlockBreakEvent event) {
+        // We don't need to handle events that no mechanic we use makes use of
+        if (!passesFilter(event))
+            return false;
+        
+        // Announce the event to anyone who considers it to be on one of their defining blocks
+        //TODO: separate the processing of events which could destroy blocks vs just interact, because interacts can't really do anything to watch blocks; watch blocks are only really for cancelling illegal block damages and for invalidating the mechanism proactively.
+        watchBlockManager.notify(event);
+        
+        // See if this event could be occurring on any mechanism's triggering blocks
+        BlockWorldVector pos = toWorldVector(event.getBlock());
+
+        try {
+            Mechanic mechanic = load(pos);
+            if (mechanic != null) {
+                mechanic.onBlockBreak(event);
+                return true;
+            }
+        } catch (InvalidMechanismException e) {
+            if (e.getMessage() != null) {
+                event.getPlayer().sendMessage(e.getMessage());
+            }
+        }
+        return false;
+    }
 
     /**
      * Handle a block right click event.
@@ -168,6 +207,7 @@ public class MechanicManager {
         
         // See if this event could be occurring on any mechanism's triggering blocks
         BlockWorldVector pos = toWorldVector(event.getClickedBlock());
+
         try {
             Mechanic mechanic = load(pos);
             if (mechanic != null) {
@@ -291,6 +331,7 @@ public class MechanicManager {
      * 
      * @param pos
      * @param player
+     * @param sign
      * @return a {@link Mechanic} if a mechanism could be found at the location;
      *         null otherwise
      * @throws InvalidMechanismException
@@ -464,7 +505,7 @@ public class MechanicManager {
         synchronized (this) {
             // Copy to array to get rid of concurrency snafus
             mechs = new SelfTriggeringMechanic[thinkingMechanics.size()];
-            thinkingMechanics.toArray(mechs);
+            mechs = thinkingMechanics.toArray(mechs);
         }
 
         for (SelfTriggeringMechanic mechanic : mechs) {

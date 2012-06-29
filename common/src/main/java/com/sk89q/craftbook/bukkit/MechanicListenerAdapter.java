@@ -25,18 +25,27 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.*;
-import org.bukkit.event.player.*;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockRedstoneEvent;
+import org.bukkit.event.block.SignChangeEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+
 import com.sk89q.craftbook.MechanicManager;
 import com.sk89q.craftbook.SourcedBlockRedstoneEvent;
-import com.sk89q.worldedit.*;
+
+import com.sk89q.worldedit.BlockWorldVector;
+import com.sk89q.worldedit.BlockWorldVector2D;
+import com.sk89q.worldedit.LocalWorld;
+import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
-import com.sk89q.worldedit.bukkit.*;
+import com.sk89q.worldedit.bukkit.BukkitUtil;
+import com.sk89q.worldedit.bukkit.BukkitWorld;
 
 /**
  * This adapter hooks a mechanic manager up to Bukkit.
@@ -93,7 +102,7 @@ public class MechanicListenerAdapter {
             this.manager = manager;
         }
         
-        @EventHandler
+        @EventHandler(ignoreCancelled = false)
         public void onPlayerInteract(PlayerInteractEvent event) {
             if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
                 manager.dispatchBlockRightClick(event);
@@ -126,6 +135,11 @@ public class MechanicListenerAdapter {
         @EventHandler
         public void onSignChange(SignChangeEvent event) {
             manager.dispatchSignChange(event);
+        }
+        
+        @EventHandler
+        public void onBlockBreak(BlockBreakEvent event) {
+        	manager.dispatchBlockBreak(event);
         }
         
         @EventHandler
