@@ -21,6 +21,7 @@ package com.sk89q.craftbook.gates.world;
 import org.bukkit.Server;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
+
 import com.sk89q.craftbook.ic.AbstractIC;
 import com.sk89q.craftbook.ic.AbstractICFactory;
 import com.sk89q.craftbook.ic.ChipState;
@@ -29,11 +30,8 @@ import com.sk89q.craftbook.ic.RestrictedIC;
 
 public class MessageSender extends AbstractIC {
 
-    protected boolean risingEdge;
-
-    public MessageSender(Server server, Sign sign, boolean risingEdge) {
+    public MessageSender(Server server, Sign sign) {
         super(server, sign);
-        this.risingEdge = risingEdge;
     }
 
     @Override
@@ -48,7 +46,7 @@ public class MessageSender extends AbstractIC {
 
     @Override
     public void trigger(ChipState chip) {
-        if (risingEdge && chip.getInput(0) || (!risingEdge && !chip.getInput(0))) {
+        if (chip.getInput(0)) {
             chip.setOutput(0, sendMessage());
         }
     }
@@ -71,21 +69,20 @@ public class MessageSender extends AbstractIC {
             player.sendMessage(message.replace("&", "\u00A7"));
             sent = true;
         }
+        else if(name.equalsIgnoreCase("BROADCAST"))
+            getServer().broadcastMessage(message);
         return sent;
     }
 
     public static class Factory extends AbstractICFactory implements RestrictedIC {
 
-        protected boolean risingEdge;
-
-        public Factory(Server server, boolean risingEdge) {
+        public Factory(Server server) {
             super(server);
-            this.risingEdge = risingEdge;
         }
 
         @Override
         public IC create(Sign sign) {
-            return new MessageSender(getServer(), sign, risingEdge);
+            return new MessageSender(getServer(), sign);
         }
     }
 

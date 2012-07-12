@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 package com.sk89q.craftbook.bukkit;
 
@@ -29,8 +29,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.sk89q.craftbook.BaseConfiguration;
+import com.sk89q.craftbook.LanguageManager;
 import com.sk89q.craftbook.LocalPlayer;
-
 import com.sk89q.wepif.PermissionsResolverManager;
 
 /**
@@ -39,12 +40,19 @@ import com.sk89q.wepif.PermissionsResolverManager;
  * @author sk89q
  */
 public abstract class BaseBukkitPlugin extends JavaPlugin {
-    
+
+    public BaseConfiguration config;
+
     /**
      * The permissions resolver in use.
      */
     private PermissionsResolverManager perms;
-    
+
+    /**
+     * The Language Manager
+     */
+    protected LanguageManager languageManager;
+
     /**
      * Logger for messages.
      */
@@ -62,17 +70,25 @@ public abstract class BaseBukkitPlugin extends JavaPlugin {
      * and the plugin is setup.
      */
     public void onEnable() {
+
+        createDefaultConfiguration("en_US.txt");
+        createDefaultConfiguration("config.yml");
+
+        config = new BaseConfiguration(getConfig(), getDataFolder());
+
+        languageManager = new LanguageManager(this);
+
         logger.info(getDescription().getName() + " "
                 + getDescription().getVersion() + " enabled.");
-        
+
         // Make the data folder for the plugin where configuration files
         // and other data files will be stored
         getDataFolder().mkdirs();
-        
+
         // Prepare permissions
         PermissionsResolverManager.initialize(this);
         perms = PermissionsResolverManager.getInstance();
-        
+
         // Register events
         registerEvents();
     }
@@ -83,21 +99,21 @@ public abstract class BaseBukkitPlugin extends JavaPlugin {
      */
     public void onDisable() {
     }
-    
+
     /**
      * Register the events that are used.
      */
     protected abstract void registerEvents();
-    
+
     /**
      * Register an event.
      * 
      * @param listener
      */
     protected void registerEvents(Listener listener) {
-    	getServer().getPluginManager().registerEvents(listener, this);
+        getServer().getPluginManager().registerEvents(listener, this);
     }
-    
+
     /**
      * Create a default configuration file from the .jar.
      * 
@@ -106,7 +122,7 @@ public abstract class BaseBukkitPlugin extends JavaPlugin {
     protected void createDefaultConfiguration(String name) {
         File actual = new File(getDataFolder(), name);
         if (!actual.exists()) {
-            
+
             InputStream input =
                     this.getClass().getResourceAsStream("/defaults/" + name);
             if (input != null) {
@@ -119,14 +135,14 @@ public abstract class BaseBukkitPlugin extends JavaPlugin {
                     while ((length = input.read(buf)) > 0) {
                         output.write(buf, 0, length);
                     }
-                    
+
                     logger.info(getDescription().getName()
                             + ": Default configuration file written: " + name);
                 } catch (IOException e) {
                     e.printStackTrace();
                 } finally {
                     try {
-                            input.close();
+                        input.close();
                     } catch (IOException e) {}
 
                     try {
@@ -137,7 +153,7 @@ public abstract class BaseBukkitPlugin extends JavaPlugin {
             }
         }
     }
-    
+
     /**
      * Get a player.
      * 
@@ -148,7 +164,7 @@ public abstract class BaseBukkitPlugin extends JavaPlugin {
     public LocalPlayer wrap(Player player) {
         return new BukkitPlayer(this, player);
     }
-    
+
     /**
      * Checks permissions.
      * 
@@ -160,12 +176,20 @@ public abstract class BaseBukkitPlugin extends JavaPlugin {
         if (sender.isOp()) {
             return true;
         }
-        
+
         // Invoke the permissions resolver
         if (sender instanceof Player) {
             return perms.hasPermission(((Player) sender).getName(), perm);
         }
-        
+
         return false;
+    }
+
+    public LanguageManager getLanguageManager() {
+        return languageManager;
+    }
+
+    public BaseConfiguration getLocalConfiguration() {
+        return config;
     }
 }

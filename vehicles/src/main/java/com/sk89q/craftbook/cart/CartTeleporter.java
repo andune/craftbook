@@ -8,6 +8,7 @@ import org.bukkit.util.Vector;
 
 
 public class CartTeleporter extends CartMechanism {
+    @Override
     public void impact(Minecart cart, CartMechanismBlocks blocks, boolean minor) {
         // validate
         if (cart == null) return;
@@ -44,6 +45,8 @@ public class CartTeleporter extends CartMechanism {
         }
 
         Location loc = com.sk89q.worldedit.bukkit.BukkitUtil.center(new Location(world, x, y, z, 0, 0) {});
+        if(!loc.getChunk().isLoaded())
+            loc.getChunk().load(true);
         if (cart.getWorld() == world) {
             cart.teleport(loc);
         } else {
@@ -54,8 +57,14 @@ public class CartTeleporter extends CartMechanism {
                 passenger.teleport(loc);
                 toCart.setPassenger(passenger);
             }
-            toCart.setVelocity(cart.getVelocity()); // speedy thing goes in, speedy thing comes out
+            toCart.setVelocity(cart.getVelocity()); // speedy thing goes in, speedy thing comes out <- Nice portal quote :)
             cart.remove();
         }
+    }
+
+    @Override
+    public void enter(Minecart cart, Entity entity, CartMechanismBlocks blocks,
+            boolean minor) {
+
     }
 }

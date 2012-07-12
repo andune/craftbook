@@ -1,3 +1,4 @@
+language: en_US
 ammeter-enable: true
 bookshelf-enable: true
 bookshelf-read-text: You pick up a book...
@@ -11,7 +12,22 @@ door-max-length: 30
 door-blocks: [4,5,20,43]
 gate-enable: true
 gate-redstone: true
+gate-blocks: [85,101,102,113]
 elevators-enable: true
 cauldron-enable: true
+cauldron-block: 1
 light-switch-enable: true
 light-stone-enable: true
+custom-drops-require-permissions: false
+snow-piling-enable: true
+snow-trample-enable: true
+jump-trample-only: true
+placable-snow: true
+area-enable: true
+area-redstone: true
+max-areas-per-user: 30
+max-size-per-area: 5000
+stop-mechanism-dupe: true
+teleporter-enable: true
+command-sign-enable: true
+dispenser-recipes-enable: true

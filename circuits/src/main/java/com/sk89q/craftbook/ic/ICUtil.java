@@ -14,12 +14,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 package com.sk89q.craftbook.ic;
 
-import org.bukkit.*;
-import org.bukkit.block.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.event.block.BlockRedstoneEvent;
+import org.bukkit.material.Lever;
 
 /**
  * IC utility functions.
@@ -27,10 +30,10 @@ import org.bukkit.block.*;
  * @author sk89q
  */
 public class ICUtil {
-    
+
     private ICUtil() {
     }
-    
+
     /**
      * Set an IC's output state at a block.
      * 
@@ -41,15 +44,21 @@ public class ICUtil {
     public static boolean setState(Block block, boolean state) {
         if (block.getType() != Material.LEVER) return false;
         byte data = block.getData();
-        int newData = data & 0x7;
-        
+        int newData;
+
+        Block sourceBlock = block.getRelative(((Lever) block.getState().getData()).getAttachedFace());
+
         if (!state)
             newData = data & 0x7;
         else
             newData = data | 0x8;
-        
+
         if (newData != data) {
             block.setData((byte)newData, true);
+            int oldS = state ? (0) : (1);
+            int newS = state ? (1) : (0);
+            BlockRedstoneEvent event = new BlockRedstoneEvent(sourceBlock, oldS, newS);
+            Bukkit.getPluginManager().callEvent(event);
             return true;
         }
         return false;
